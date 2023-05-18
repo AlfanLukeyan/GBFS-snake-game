@@ -133,6 +133,80 @@ class snake(object):
             else:
                 c.draw(surface)
 
+def drawScore(score):
+    score_font = pygame.font.SysFont('Raleway', 20, bold=True)
+    score_surface = score_font.render('Score : ' + str(score), True, pygame.Color(153, 255, 51))
+    score_rect = score_surface.get_rect()
+    score_rect.topleft = (width-120, 10)
+    win.blit(score_surface, score_rect)
+
+def drawPressKeyMsg():
+    press_font = pygame.font.SysFont('Raleway', 25)
+    pressKeySurf = press_font.render('Press a key to play.', True, (255, 255, 255))
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.midtop = (250, 350)
+    win.blit(pressKeySurf, pressKeyRect)
+
+def redrawWindow(lose = False):
+    win.fill((0,0,0))
+    s.draw(win)
+    snack.draw(win,food=True)
+    if (not(lose)):
+        drawGrid(width,rows, win)
+    drawScore(len(s.body)-1)
+    pygame.display.update()
+
+def randomSnack(rows, item):
+
+    positions = item.body
+
+    while True:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+        if len(list(filter(lambda z:z.pos == (x,y), positions))) > 0:
+            continue
+        else:
+            break
+        
+    return (x,y)
+
+def showGameOverScreen():
+    gameOverFont = pygame.font.SysFont("courier new", 150)
+    gameSurf = gameOverFont.render('Game', True, pygame.Color(255, 255, 255))
+    overSurf = gameOverFont.render('Over', True, pygame.Color(255, 255, 255))
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+    gameRect.midtop = (width / 2, 10)
+    overRect.midtop = (width / 2, gameRect.height + 10 + 25)
+
+    win.blit(gameSurf, gameRect)
+    win.blit(overSurf, overRect)
+    drawPressKeyMsg()
+    pygame.display.update()
+    pygame.time.wait(500)
+    checkForKeyPress()
+
+    while True:
+        if checkForKeyPress():
+            pygame.event.get() 
+            return
+
+def checkForKeyPress():
+    if len(pygame.event.get(pygame.QUIT)) > 0:
+        pygame.quit()
+        sys.exit()
+    keyUpEvents = pygame.event.get(pygame.KEYUP)
+    if len(keyUpEvents) == 0:
+        return None
+    if keyUpEvents[0].key == pygame.K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+    return keyUpEvents[0].key
+
+def manhattan_dis(p,q,size=0):
+    dx = min( abs( q[0] - p[0] ), size - abs( q[0] - p[0] ) )
+    dy = min( abs( q[1] - p[1] ), size - abs( q[1] - p[1] ) )
+    return dx + dy
 
 def main():
     global width, rows, s, snack, win, visited
