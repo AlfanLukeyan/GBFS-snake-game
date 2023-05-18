@@ -203,7 +203,171 @@ def checkForKeyPress():
         sys.exit()
     return keyUpEvents[0].key
 
-def manhattan_dis(p,q,size=0):
+def bfsAlgorithm(): # Best First Search Algorithm to find the shortest path to the snack
+    global s, snack, visited # s: snake, snack: snack, visited: visited nodes
+    currentPositionX = s.body[0].pos[0] # current position of the snake by x axis 
+    currentPositionY = s.body[0].pos[1] # current position of the snake by y axis
+    nodes = [] # 0: left, 1: right, 2: up, 3: down
+
+    # adding the nodes to the list 
+    p = ((currentPositionX - 1) % 20,currentPositionY) 
+    nodes.append(('left', manhattanDistance((currentPositionX - 1,currentPositionY),snack.pos,size = rows), p)) 
+    p = ((currentPositionX + 1) % 20,currentPositionY)
+    nodes.append(('right', manhattanDistance((currentPositionX + 1,currentPositionY),snack.pos,size = rows), p))
+    p = (currentPositionX,(currentPositionY - 1) % 20)
+    nodes.append(('up', manhattanDistance((currentPositionX,currentPositionY - 1),snack.pos,size = rows), p))
+    p = (currentPositionX,(currentPositionY + 1) % 20)
+    nodes.append(('down', manhattanDistance((currentPositionX,currentPositionY + 1),snack.pos,size = rows), p))
+
+    if set(nodes[:][2])<= set(list(map(lambda z:z.pos,s.body))): # if the snake is stuck in a dead end 
+        s.move()
+        return
+    
+    i = 0 # index of the node
+    print() 
+    bestMove = [] # list of the best moves
+    distance = [] # list of the distances of the nodes
+
+    # finding the best moves
+    for p in nodes:
+        priority = 0 # priority of the node
+        # if the snake is longer than 2 nodes and the snake can't go to the nodes in the list
+        if (len(s.body) > 2):
+            temp = [((currentPositionX + 1) % 20,(currentPositionY + 1) % 20),((currentPositionX + 1) % 20,(currentPositionY - 1) % 20)] # list of the nodes that the snake can't go to
+            if set(temp) <= set(list(map(lambda z:z.pos,s.body))): 
+                if p[0] == "right":
+                    priority += 1
+                elif (p[0] == "up" and s.curr_dir == "right" and s.last_dir == "up") or (p[0] == "down" and s.curr_dir == "right" and s.last_dir == "down"): 
+                    priority += 1 
+            temp = [((currentPositionX - 1) % 20,(currentPositionY + 1) % 20),((currentPositionX - 1) % 20,(currentPositionY - 1) % 20)]
+            if set(temp) <= set(list(map(lambda z:z.pos,s.body))):
+                if p[0] == "left":
+                    priority += 1
+                elif (p[0] == "up" and s.curr_dir == "left" and s.last_dir == "up") or (p[0] == "down" and s.curr_dir == "left" and s.last_dir == "down"):
+                    priority += 1
+            temp = [((currentPositionX + 1)%20,(currentPositionY + 1)%20),((currentPositionX - 1)%20,(currentPositionY + 1)%20)]
+            if set(temp) <= set(list(map(lambda z:z.pos,s.body))):
+                if p[0] == "down":
+                    priority += 1
+                elif (p[0] == "left" and s.curr_dir == "down" and s.last_dir == "left") or (p[0] == "right" and s.curr_dir == "down" and s.last_dir == "right"):
+                    priority += 1
+            temp = [((currentPositionX + 1)%20,(currentPositionY - 1)%20),((currentPositionX - 1)%20,(currentPositionY - 1)%20)]
+            if set(temp) <= set(list(map(lambda z:z.pos,s.body))):
+                if p[0] == "up":
+                    priority += 1
+                elif (p[0] == "left" and s.curr_dir == "up" and s.last_dir == "left") or (p[0] == "right" and s.curr_dir == "up" and s.last_dir == "right"):
+                    priority += 1
+                    
+            cy = 0 # number of the nodes in the left side of the snake 
+            if currentPositionY > 16 and currentPositionY < 19: # if the snake is in the bottom of the screen
+                cy = 19 - currentPositionY 
+            elif currentPositionY < 17: # if the snake is in the top of the screen
+                cy = 3
+            bottom = [q for q in list(map(lambda z:z.pos,s.body)) if q[0] == currentPositionX and q[1] - currentPositionY < cy and currentPositionY < q[1]] # list of the nodes in the bottom of the snake
+            for i in range(3-cy): # adding the nodes in the bottom of the snake to the list
+                if (currentPositionX,i) in list(map(lambda z:z.pos,s.body)): bottom.append((currentPositionX,i)) # if the node is in the snake add it to the list 
+            print("bottom " + str(bottom)) # printing the list of the nodes in the bottom of the snake
+
+            cy = 0  # number of the nodes in the top side of the snake
+            if currentPositionY > 0 and currentPositionY < 3: 
+                cy = currentPositionY
+            elif currentPositionY > 2: # 
+                cy = 3
+            top = [q for q in list(map(lambda z:z.pos,s.body)) if q[0] == currentPositionX and currentPositionY - q[1] < cy and currentPositionY > q[1]]
+            for i in range(19,16+cy,-1):
+                if (currentPositionX,i) in list(map(lambda z:z.pos,s.body)): top.append((currentPositionX,i))
+            print("top " + str(top))
+
+            cx = 0 # number of the nodes in the right side of the snake
+            if currentPositionX > 0 and currentPositionX < 3:
+                cx = currentPositionX
+            elif currentPositionX > 2:
+                cx = 3
+            left = [q for q in list(map(lambda z:z.pos,s.body)) if q[1] == currentPositionY and currentPositionX - q[0] < cx and currentPositionX > q[0]]
+            for i in range(19,16+cx,-1):
+                if (i,currentPositionY) in list(map(lambda z:z.pos,s.body)): left.append((i,currentPositionY))
+            print("left " + str(left))
+
+            cx = 0 # number of the nodes in the left side of the snake
+            if currentPositionX > 16 and currentPositionX < 19:
+                cx = 19 - currentPositionX
+            elif currentPositionX < 17:
+                cx = 3
+            right = [q for q in list(map(lambda z:z.pos,s.body)) if q[1] == currentPositionY and q[0] - currentPositionX < cx and currentPositionX < q[0]]
+            for i in range(3 - cx):
+                if (i,currentPositionY) in list(map(lambda z:z.pos,s.body)): right.append((i,currentPositionY))
+            print("right " + str(right))
+
+            temp = [] # list of the distances between the snake and the food
+            if p[0] == "up": # if the direction is up
+                if len(top) and s.curr_dir != "down": # if there is a node in the top of the snake and the snake is not going down
+                    priority += len(top) # increase the priority by the number of the nodes in the top of the snake
+                    for q in top: # for each node in the top of the snake
+                        temp.append(manhattanDistance((currentPositionX,currentPositionY),q,size=rows)) # add the distance between the snake and the node to the list of the distances
+                    distance.append(("up",min(temp)))
+            elif p[0] == "down": # if the direction is down
+                if len(bottom) and s.curr_dir != "up":
+                    priority += len(bottom)
+                    for q in bottom:
+                        temp.append(manhattanDistance((currentPositionX,currentPositionY),q,size=rows))
+                    distance.append(("down",min(temp)))
+            elif p[0] == "left": # if the direction is left
+                if len(left) and s.curr_dir != "right":
+                    priority += len(left)
+                    for q in left:
+                        temp.append(manhattanDistance((currentPositionX,currentPositionY),q,size=rows))
+                    distance.append(("left",min(temp)))
+            elif p[0] == "right": # if the direction is right 
+                if len(right) and s.curr_dir != "left":
+                    priority += len(right)
+                    for q in right:
+                        temp.append(manhattanDistance((currentPositionX,currentPositionY),q,size=rows))
+                    distance.append(("right",min(temp)))
+            if p[2] in list(map(lambda z:z.pos,s.body)):
+                priority += 1
+        bestMove.append((p[0],p[1],p[2],priority)) # add the direction, the position of the snake after moving in this direction, the position of the food and the priority to the list of the best moves 
+    
+    # if the snake is in the top of the screen and the food is in the bottom of the screen 
+    if len(distance):
+        print(distance)
+        minDistance = min(distance, key=lambda t: t[1]) # find the direction with the minimum distance between the snake and the food
+        print(minDistance)
+        temp = [x[0] for x in distance if x[1] == minDistance[1]] # list of the directions with the minimum distance between the snake and the food
+        print(temp)
+        for j in temp: # for each direction with the minimum distance between the snake and the food 
+            print(j)
+            near = bestMove.pop([y[0] for y in bestMove].index(j)) # remove the direction from the list of the best moves
+            print(near)
+            bestMove.append((near[0],near[1],near[2],near[3]+1)) # add the direction to the list of the best moves with the priority increased by 1 
+    bestMove = sorted(bestMove,key = lambda t: (t[3],t[1])) # sort the list of the best moves by the priority and the position of the snake after moving in this direction
+    print(bestMove)
+
+    for p in bestMove: # for each direction in the list of the best moves
+        print(i)
+        if p[0] == "left" and s.curr_dir != "right" and p not in visited: # if the direction is left and the snake is not going right and the snake didn't visit this position before
+            print("A")
+            s.move(control = "left") # move the snake to the left
+            visited.add(p) # add the position to the set of the visited positions
+            return 
+        elif p[0] == "right" and s.curr_dir != "left" and p not in visited:
+            print("B")
+            s.move(control = "right")
+            visited.add(p)
+            return
+        elif p[0] == "up" and s.curr_dir != "down" and p not in visited:
+            print("C")
+            s.move(control = "up")
+            visited.add(p)
+            return
+        elif p[0] == "down" and s.curr_dir != "up" and p not in visited:
+            print("D")
+            s.move(control = "down")
+            visited.add(p)
+            return 
+        i += 1 # increase the index by 1
+    s.move() # if the snake didn't move yet, move the snake in the same direction
+
+def manhattanDistance(p,q,size=0):
     dx = min( abs( q[0] - p[0] ), size - abs( q[0] - p[0] ) )
     dy = min( abs( q[1] - p[1] ), size - abs( q[1] - p[1] ) )
     return dx + dy
@@ -229,7 +393,7 @@ def main():
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
-        #BFS
+        bfsAlgorithm()
         if s.body[0].pos == snack.pos:
             visited = set({})
             s.addCube()
@@ -245,5 +409,4 @@ def main():
                 snack = cube(randomSnack(rows, s), color=(255, 51, 51))
         
         redrawWindow()
-
 main()
