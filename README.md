@@ -10,10 +10,10 @@
 
 
 ## About Apps
-This is a simple game called "snake" that we made using python. This game is made for the purpose of completing the quiz 2 of the Design and Analysis of Algorithms course. This game is made using the Best First Search algorithm. The Best best first search algorithm is an algorithm that always chooses the best path to the target. The best path is determined by the distance between the snake's head and the target.
+This is a simple game called "snake" that we made using python. This game is made for the purpose of completing the quiz 2 of the Design and Analysis of Algorithms course. This game is made using the Greedy Best First Search algorithm. The Greedy Best best first search algorithm is an algorithm that always chooses the best path to the target. The best path is determined by the distance between the snake's head and the target.
 
 ## How to play
-1. install [python](https://www.python.org/) 3 or higher
+1. install [python 3](https://www.python.org/) or higher
 2. install pygame
     ```
     pip3 install pygame
