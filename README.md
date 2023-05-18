@@ -1,0 +1,24 @@
+# Design & Analysis of Algorithms - Quiz 2
+
+# Authors
+| Name                  | NRP          | Github Address                                     | 
+| :--------             | :-------     | :-------------------------                         |
+| `Alfan Lukeyan Rizki` | `5025211046` | [@AlfanLukeyan](https://github.com/AlfanLukeyan)   |
+| `Dewangga Dika Darmawan`   | `5025211114` | [@ddedida](https://github.com/ddedida)             |
+| `Syukra Wahyu Ramadhan`  | `5025211246` | [@MyNameIsSyukra](https://github.com/MyNameIsSyukra)       |
+| `Muhammad Rifqi Fadhilah` | `5025211202` | [@rifqol](https://github.com/rifqol)
+
+# About Apps
+This is a simple game called "snake" that we made using python. This game is made for the purpose of completing the quiz 2 of the Design and Analysis of Algorithms course. This game is made using the Best First Search algorithm. The Best best first search algorithm is an algorithm that always chooses the best path to the target. The best path is determined by the distance between the snake's head and the target.
+
+# How to play
+1. install [python](https://www.python.org/) 3 or higher
+2. install pygame
+    ```
+    pip3 install pygame
+    ```
+3. run snake.py
+    ```
+    python3 snake.py
+    ```
+4. enjoy the game!

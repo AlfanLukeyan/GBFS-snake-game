@@ -1,43 +1,6 @@
-import pygame
-import math
+import pygame 
 import random
-import copy
 import sys
-
-class Cube:
-    rows = 20
-    w = 500
-    
-    def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
-        self.pos = start
-        self.dirnx = dirnx
-        self.dirny = dirny
-        self.color = color
-
-    def move(self, dirnx, dirny):
-        self.dirnx = dirnx
-        self.dirny = dirny
-        self.pos = ((self.pos[0] + self.dirnx) % Cube.rows, (self.pos[1] + self.dirny) % Cube.rows)
-
-    def draw(self, surface, eyes=False, food=False):
-        dis = Cube.w // Cube.rows
-        i = self.pos[0]
-        j = self.pos[1]
-        
-        if food:
-            centre = dis // 2
-            radius = 10
-            pygame.draw.circle(surface, self.color, (i * dis + centre + 1, j * dis + centre + 1), radius)
-        else:
-            pygame.draw.rect(surface, self.color, (i * dis + 1, j * dis + 1, dis - 2, dis - 2))
-        
-        if eyes:
-            centre = dis // 2
-            radius = 3
-            circle_middle = (i * dis + centre - radius, j * dis + 8)
-            circle_middle2 = (i * dis + dis - radius * 2, j * dis + 8)
-            pygame.draw.circle(surface, (0, 0, 0), circle_middle, radius)
-            pygame.draw.circle(surface, (0, 0, 0), circle_middle2, radius)
 
 class snake(object):
     body = []
@@ -168,87 +131,40 @@ class snake(object):
             else:
                 c.draw(surface)
 
-def drawGrid(w, rows, surface):
-    size_btwn = w // rows
+class cube:
+    rows = 20
+    w = 500
+    
+    def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
+        self.pos = start
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.color = color
 
-    x = 0
-    y = 0
-    for l in range(rows):
-        x += size_btwn
-        y += size_btwn
+    def move(self, dirnx, dirny):
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.pos = ((self.pos[0] + self.dirnx) % cube.rows, (self.pos[1] + self.dirny) % cube.rows)
 
-        pygame.draw.line(surface, (236, 240, 241), (x, 0), (x, w))
-        pygame.draw.line(surface, (236, 240, 241), (0, y), (w, y))
-
-def drawScore(score):
-    score_font = pygame.font.SysFont('Raleway', 20, bold=True)
-    score_surface = score_font.render('Score : ' + str(score), True, pygame.Color(153, 255, 51))
-    score_rect = score_surface.get_rect()
-    score_rect.topleft = (width-120, 10)
-    win.blit(score_surface, score_rect)
-
-def drawPressKeyMsg():
-    press_font = pygame.font.SysFont('Raleway', 25)
-    pressKeySurf = press_font.render('Press a key to play.', True, (255, 255, 255))
-    pressKeyRect = pressKeySurf.get_rect()
-    pressKeyRect.midtop = (250, 350)
-    win.blit(pressKeySurf, pressKeyRect)
-
-def redrawWindow(lose = False):
-    win.fill((0,0,0))
-    s.draw(win)
-    snack.draw(win,food=True)
-    if (not(lose)):
-        drawGrid(width,rows, win)
-    drawScore(len(s.body)-1)
-    pygame.display.update()
-
-def randomSnack(rows, item):
-
-    positions = item.body
-
-    while True:
-        x = random.randrange(rows)
-        y = random.randrange(rows)
-        if len(list(filter(lambda z:z.pos == (x,y), positions))) > 0:
-            continue
-        else:
-            break
+    def draw(self, surface, eyes=False, food=False):
+        dis = cube.w // cube.rows
+        i = self.pos[0]
+        j = self.pos[1]
         
-    return (x,y)
-
-def showGameOverScreen():
-    gameOverFont = pygame.font.SysFont("courier new", 150)
-    gameSurf = gameOverFont.render('Game', True, pygame.Color(255, 255, 255))
-    overSurf = gameOverFont.render('Over', True, pygame.Color(255, 255, 255))
-    gameRect = gameSurf.get_rect()
-    overRect = overSurf.get_rect()
-    gameRect.midtop = (width / 2, 10)
-    overRect.midtop = (width / 2, gameRect.height + 10 + 25)
-
-    win.blit(gameSurf, gameRect)
-    win.blit(overSurf, overRect)
-    drawPressKeyMsg()
-    pygame.display.update()
-    pygame.time.wait(500)
-    checkForKeyPress()
-
-    while True:
-        if checkForKeyPress():
-            pygame.event.get() 
-            return
-
-def checkForKeyPress():
-    if len(pygame.event.get(pygame.QUIT)) > 0:
-        pygame.quit()
-        sys.exit()
-    keyUpEvents = pygame.event.get(pygame.KEYUP)
-    if len(keyUpEvents) == 0:
-        return None
-    if keyUpEvents[0].key == pygame.K_ESCAPE:
-        pygame.quit()
-        sys.exit()
-    return keyUpEvents[0].key
+        if food:
+            centre = dis // 2
+            radius = 10
+            pygame.draw.circle(surface, self.color, (i * dis + centre + 1, j * dis + centre + 1), radius)
+        else:
+            pygame.draw.rect(surface, self.color, (i * dis + 1, j * dis + 1, dis - 2, dis - 2))
+        
+        if eyes:
+            centre = dis // 2
+            radius = 3
+            circle_middle = (i * dis + centre - radius, j * dis + 8)
+            circle_middle2 = (i * dis + dis - radius * 2, j * dis + 8)
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle2, radius)
 
 def bfsAlgorithm(): # Best First Search Algorithm to find the shortest path to the snack
     global s, snack, visited # s: snake, snack: snack, visited: visited nodes
@@ -419,6 +335,88 @@ def manhattanDistance(p,q,size=0):
     dy = min( abs( q[1] - p[1] ), size - abs( q[1] - p[1] ) )
     return dx + dy
 
+def drawGrid(w, rows, surface):
+    sizeBetween = w // rows
+
+    x = 0
+    y = 0
+    for l in range(rows):
+        x += sizeBetween
+        y += sizeBetween
+
+        pygame.draw.line(surface, (236, 240, 241), (x, 0), (x, w))
+        pygame.draw.line(surface, (236, 240, 241), (0, y), (w, y))
+
+def drawScore(score):
+    scoreFont = pygame.font.SysFont('Raleway', 20, bold=True)
+    scoreSurface = scoreFont.render('Score : ' + str(score), True, pygame.Color(153, 255, 51))
+    scoreRect = scoreSurface.get_rect()
+    scoreRect.topleft = (width-120, 10)
+    win.blit(scoreSurface, scoreRect)
+
+def drawPressKeyMsg():
+    pressFont = pygame.font.SysFont('Raleway', 25)
+    pressKeySurf = pressFont.render('Press a key to play.', True, (255, 255, 255))
+    pressKeyRect = pressKeySurf.get_rect()
+    pressKeyRect.midtop = (250, 350)
+    win.blit(pressKeySurf, pressKeyRect)
+
+def redrawWindow(lose = False):
+    win.fill((0,0,0))
+    s.draw(win)
+    snack.draw(win,food=True)
+    if (not(lose)):
+        drawGrid(width,rows, win)
+    drawScore(len(s.body)-1)
+    pygame.display.update()
+
+def randomSnack(rows, item):
+
+    positions = item.body
+
+    while True:
+        x = random.randrange(rows)
+        y = random.randrange(rows)
+        if len(list(filter(lambda z:z.pos == (x,y), positions))) > 0:
+            continue
+        else:
+            break
+        
+    return (x,y)
+
+def showGameOverScreen():
+    gameOverFont = pygame.font.SysFont("courier new", 150)
+    gameSurf = gameOverFont.render('Game', True, pygame.Color(255, 255, 255))
+    overSurf = gameOverFont.render('Over', True, pygame.Color(255, 255, 255))
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+    gameRect.midtop = (width / 2, 10)
+    overRect.midtop = (width / 2, gameRect.height + 10 + 25)
+
+    win.blit(gameSurf, gameRect)
+    win.blit(overSurf, overRect)
+    drawPressKeyMsg()
+    pygame.display.update()
+    pygame.time.wait(500)
+    checkForKeyPress()
+
+    while True:
+        if checkForKeyPress():
+            pygame.event.get() 
+            return
+
+def checkForKeyPress():
+    if len(pygame.event.get(pygame.QUIT)) > 0:
+        pygame.quit()
+        sys.exit()
+    keyUpEvents = pygame.event.get(pygame.KEYUP)
+    if len(keyUpEvents) == 0:
+        return None
+    if keyUpEvents[0].key == pygame.K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+    return keyUpEvents[0].key
+
 def main():
     global width, rows, s, snack, win, visited
     pygame.init()
@@ -433,7 +431,6 @@ def main():
     s = snake((255,255,51), (startx, starty))
     snack = cube(randomSnack(rows, s), color=(255,51,51))
     flag = True
-    cost = 0
     clock = pygame.time.Clock()
     visited = set({})
 
@@ -454,6 +451,7 @@ def main():
                 starty = random.randint(0, rows-1)
                 s.reset((startx,starty))
                 snack = cube(randomSnack(rows, s), color=(255, 51, 51))
-        
+    
         redrawWindow()
+
 main()
