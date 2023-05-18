@@ -4,6 +4,41 @@ import random
 import copy
 import sys
 
+class Cube:
+    rows = 20
+    w = 500
+    
+    def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
+        self.pos = start
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.color = color
+
+    def move(self, dirnx, dirny):
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.pos = ((self.pos[0] + self.dirnx) % Cube.rows, (self.pos[1] + self.dirny) % Cube.rows)
+
+    def draw(self, surface, eyes=False, food=False):
+        dis = Cube.w // Cube.rows
+        i = self.pos[0]
+        j = self.pos[1]
+        
+        if food:
+            centre = dis // 2
+            radius = 10
+            pygame.draw.circle(surface, self.color, (i * dis + centre + 1, j * dis + centre + 1), radius)
+        else:
+            pygame.draw.rect(surface, self.color, (i * dis + 1, j * dis + 1, dis - 2, dis - 2))
+        
+        if eyes:
+            centre = dis // 2
+            radius = 3
+            circle_middle = (i * dis + centre - radius, j * dis + 8)
+            circle_middle2 = (i * dis + dis - radius * 2, j * dis + 8)
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circle_middle2, radius)
+
 class snake(object):
     body = []
     turns = {}
@@ -132,6 +167,18 @@ class snake(object):
                 c.draw(surface, True)
             else:
                 c.draw(surface)
+
+def drawGrid(w, rows, surface):
+    size_btwn = w // rows
+
+    x = 0
+    y = 0
+    for l in range(rows):
+        x += size_btwn
+        y += size_btwn
+
+        pygame.draw.line(surface, (236, 240, 241), (x, 0), (x, w))
+        pygame.draw.line(surface, (236, 240, 241), (0, y), (w, y))
 
 def drawScore(score):
     score_font = pygame.font.SysFont('Raleway', 20, bold=True)
